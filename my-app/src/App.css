@@ -1,0 +1,60 @@
+.App {
+  background-color: rgb(161, 155, 155);
+}
+.tabs {
+  margin: 3%;
+  padding-bottom: 30%;
+  background-color: rgb(32, 49, 59);
+}
+.tabs__list {
+  margin-top: 3%;
+  padding-top: 5%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 80%;
+  height: 8vw;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tabs__item {
+  list-style: none;
+  color: white;
+  border:1px solid rgb(64, 73, 78);
+  background-color: rgb(64, 73, 78);
+  width: 100%;
+  text-align: center;
+}
+.tabs__item:hover { 
+  cursor: pointer;
+}
+.tabs__content{
+  display: none;
+}
+.active{
+  display: block;
+}
+.activeTab{
+  background-color: rgb(0, 209, 146);
+}
+.h2-content1 {
+  text-align: center;
+  color: white;
+  margin-top: 5%;
+}
+.form {
+  margin-top: 4%;
+  width: 78%;
+  margin-left: 12%;
+}
+.remember {
+  color: rgb(0, 209, 146);
+  margin-top: 2vw;
+  margin-left: 64vw;
+  margin-bottom: 3%;
+  cursor: pointer;
+}
+.field {
+  margin-top: 10%;
+}
