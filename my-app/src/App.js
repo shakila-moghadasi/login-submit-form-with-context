@@ -3,7 +3,7 @@ import Tabs from './Tabs';
 
 function App() {
   return (
-    <div className="App d-flex justify-content-center">
+    <div className="App">
       <Tabs/>
     </div>
   );
