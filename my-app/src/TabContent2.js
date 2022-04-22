@@ -10,7 +10,6 @@ function TabContent2() {
   const [eduPlaceShow, setEduPlaceShow] = useState(false)
   const [activeCities, setActiveCities] = useState([])
 
-    const handlePassword = useCallback(() => setShowPassword(!showPassword))
     const handleCities = useCallback(province => setActiveCities(iranstates[province]))
     const handleEduPlace = useCallback(e => {
         setEduPlaceShow(e.target.value.length === 0 ? false : true)}
