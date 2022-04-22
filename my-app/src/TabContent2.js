@@ -1,9 +1,53 @@
 import { Form , Row , Col , Button} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, {useState} from 'react';
+import React, { useCallback , useState ,useEffect } from 'react';
 import { useFormik } from "formik";
+import axios from 'axios';
 
 function TabContent2() {
+  const [iranstates, setIranStates] = useState({})
+  const [showPassword, setShowPassword] = useState(false)
+  const [eduPlaceShow, setEduPlaceShow] = useState(false)
+  const [activeCities, setActiveCities] = useState([])
+
+    const handlePassword = useCallback(() => setShowPassword(!showPassword))
+    const handleCities = useCallback(province => setActiveCities(iranstates[province]))
+    const handleEduPlace = useCallback(e => {
+        setEduPlaceShow(e.target.value.length === 0 ? false : true)}
+    )
+
+  function validate(values) {
+    const errors = {};
+    if (!values.firstName) errors.firstName = 'این فیلد ضروری است'
+    if (!values.lastName) errors.lastName = 'این فیلد ضروری است'
+    if (!values.city) errors.city = 'این فیلد ضروری است'
+    if (!values.province) errors.province = 'این فیلد ضروری است'
+    if (values.education) {
+        if (!values.educationcity) errors.educationcity = 'این فیلد ضروری است'
+    }
+    if (!values.email) {
+        errors.email = 'این فیلد ضروری است';
+    } else if (
+        !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+    ) {
+        errors.email = 'آدرس ایمیل نامعتبر است';
+    }
+    if(!values.password){
+        errors.password = 'این فیلد ضروری است'
+    }else if(values.password.length < 6){
+        errors.password = "رمز عبور وارد شده خیلی کوتاه هست"
+    }else if(values.password.length > 50) {
+        errors.password = "رمز عبور وارد شده خیلی بلند هست"
+    }
+    return errors;
+  }
+
+  useEffect(() => {
+    axios.get("https://github.com/pesarkhobeee/iran-states-and-cities-json-and-sql-including-area-coordinations/blob/master/iran_cities_with_coordinates.hjson")
+        .then((res) => setIranStates(res.data))
+        .catch((err) => console.log(err));
+    return () => setIranStates([])
+}, [])
 
     const formik = useFormik({
       initialValues: {
@@ -12,20 +56,18 @@ function TabContent2() {
         email: "",
         education: "",
         educationcity:"",
-        statecity:"",
+        province:"",
         city:"",
         borncity:"",
         acceptTerms: false,
       },
-
-      handleInputChange: (e) => {
-        console.log(e.target.value);
-      },
-
-    handleSubmit: (data) => {
-      console.log(firstName,lastName,email,password,education,educationcity,statecity,city,borncity);
-      console.log(JSON.stringify(data, null, 2));
-    }
+        onSubmit: async (values, { setSubmitting, resetForm }) => {
+            setSubmitting(false);
+            await axios.post('http://localhost:3001/users', values)
+                .catch(err => console.log(err))
+                .then(alert('ثبت نام شما با موفقیت انجام شد!'))
+            resetForm()
+        }
     });
 
     return (
@@ -35,7 +77,8 @@ function TabContent2() {
             <Row>
               <Col>
                 <Form.Control 
-                    onChange={formik.handleInputChange}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                     value={formik.values.firstName}
                     style={{backgroundColor : "rgb(32, 49, 59" ,  color : "wight"}} 
                     placeholder="نام" 
@@ -43,7 +86,8 @@ function TabContent2() {
               </Col>
               <Col>
                 <Form.Control 
-                  onChange={formik.handleInputChange}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   value={formik.values.lastName} 
                   style={{backgroundColor : "rgb(32, 49, 59" ,  color : "wight"}} 
                   placeholder="نام خانوادگی"
@@ -53,22 +97,22 @@ function TabContent2() {
             <Row>
               <Col>
                 <Form.Control 
-                  onChange={formik.handleInputChange}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   value={formik.values.education}
                   style={{backgroundColor : "rgb(32, 49, 59" ,  color : "wight" , marginTop : "12%"}} 
                   placeholder="تحصیلات"
-                  // onChange={(e) => (e.target.value)?this.visablecitystudy:""}
                 />
               </Col>
               <Col>
                 <Form.Control 
-                  onChange={formik.handleInputChange}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   value={formik.values.educationcity}
                   style={{
                     backgroundColor : "rgb(32, 49, 59" ,
                     color : "wight" , 
                     marginTop : "12%" , 
-                    // visibility : this.state.visibility
                   }} 
                   placeholder="شهر محل تحصیل"  
                 />
@@ -77,48 +121,28 @@ function TabContent2() {
             <Row>
               <Col>
               <Form.Select aria-label="Default select example" 
-                onChange={formik.handleInputChange}
-                value={formik.values.statecity}
+                value={formik.values.province}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 style={{backgroundColor : "rgb(32, 49, 59" , color : "wight" , marginTop : "12%"}} 
-                // onChange={(e) => (e.target.value)?this.visablecity:""}
               >
-                <option style={{color : "wight"}}>استان</option>
-                <option value="1">آذربایجان شرقی</option>
-                <option value="2">آذربایجان غربی</option>
-                <option value="3">اردبیل</option>
-                <option value="4">اصفهان</option>
-                <option value="5">البرز</option>
-                <option value="6">ایلام</option>
-                <option value="7">بوشهر</option>
-                <option value="8">تهران</option>
-                <option value="9">چهارمحال و بختیاری</option>
-                <option value="10">خراسان جنوبی</option>
-                <option value="11">خراسان رضوی</option>
-                <option value="12">خراسان شمالی</option>
-                <option value="13">خوزستان</option>
-                <option value="14">زنجان</option>
-                <option value="15">سمنان</option>
-                <option value="16">سیستان و بلوچستان</option>
-                <option value="17">فارس</option>
-                <option value="18">قزوین</option>
-                <option value="19">قم</option>
-                <option value="20">کردستان</option>
-                <option value="21">کرمان</option>
-                <option value="22">کرمانشاه</option>
-                <option value="23">کهکیلویه و بویراحمد</option>
-                <option value="24">گلستان</option>
-                <option value="25">گیلان</option>
-                <option value="26">لرستان</option>
-                <option value="27">مازندران</option>
-                <option value="28">مرکزی</option>
-                <option value="29">هرمزگان</option>
-                <option value="30">همدان</option>
-                <option value="31">یزد</option>
+                {Object.keys(iranstates).map((item, index) => {
+                  <option 
+                    value={item.name}  
+                    key={index}
+                  >
+                      {item.name}
+                  </option>
+                })}
               </Form.Select>
+              <p>
+                {formik.errors.province && formik.touched.province && formik.errors.province}
+              </p>
               </Col>
               <Col>
               <Form.Select aria-label="Default select example" 
-                  onChange={formik.handleInputChange}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   value={formik.values.city}
                   style={{backgroundColor : "rgb(32, 49, 59" ,  color : "wight" , marginTop : "12%"}} 
                   // disabled={this.state.disable}
@@ -130,7 +154,8 @@ function TabContent2() {
               </Col>
               <Col>
                 <Form.Control 
-                  onChange={formik.handleInputChange}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   value={formik.values.borncity}
                   style={{backgroundColor : "rgb(32, 49, 59" ,  color : "wight" , marginTop : "12%"}} 
                   placeholder="شهر محل تولد"  type=''
@@ -139,7 +164,8 @@ function TabContent2() {
             </Row>
             <Form.Group controlId="formGroupEmail">
                 <Form.Control 
-                  onChange={formik.handleInputChange}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   value={formik.values.email}
                   style={{backgroundColor : "rgb(32, 49, 59" ,  color : "wight" , marginTop : "4%"}} 
                   type="email" 
@@ -148,7 +174,8 @@ function TabContent2() {
             </Form.Group>
             <Form.Group controlId="formGroupPassword">
                 <Form.Control 
-                  onChange={formik.handleInputChange}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   value={formik.values.password}
                   style={{backgroundColor : "rgb(32, 49, 59" ,  color : "wight" , marginTop : "4%"}} 
                   type="password" 
@@ -156,6 +183,7 @@ function TabContent2() {
                 />
             </Form.Group>
             <Button 
+              disabled={formik.isSubmitting}
               type='submit'
               style={{backgroundColor : "rgb(0, 209, 146)" ,
                 color : "wight" , 
