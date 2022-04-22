@@ -27,10 +27,6 @@ function TabContent2() {
     }
     if (!values.email) {
         errors.email = 'این فیلد ضروری است';
-    } else if (
-        !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-    ) {
-        errors.email = 'آدرس ایمیل نامعتبر است';
     }
     if(!values.password){
         errors.password = 'این فیلد ضروری است'
